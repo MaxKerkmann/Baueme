@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bäume
 {
@@ -10,9 +7,8 @@ namespace Bäume
         public class Node<T> //Klasse Knoten
         {
             private T value;        //Wert des Knoten
-
             private List<Node<T>> children;     //Liste der Kinder des Knoten
-            private bool hasParent;     //Checked ob der Knoten Eltern hat
+       
 
             public Node(T value)        //Erstellt einen Knoten
             {
@@ -31,12 +27,9 @@ namespace Bäume
             {
                 return this.value;
             }
-            public int ChildrenCount        //Gibt die Anzahl der Kinder eines Knotens zurück
+            public int ChildrenCount()        //Gibt die Anzahl der Kinder eines Knotens zurück
             {
-                get
-                {
                     return this.children.Count;
-                }
             }
             public void AddChild(Node<T> child)       //Fügt einen neuen Nachfolger hinzu
             {
@@ -44,7 +37,7 @@ namespace Bäume
                 {
                     Console.WriteLine("Man kann nicht Nichts einfügen");
                 }
-                child.hasParent = true;
+               
                 this.children.Add(child);
             }
             public Node<T> GetChild(int index)      //Gibt die Position des Kindes zurück
@@ -67,39 +60,62 @@ namespace Bäume
             public Tree(T value, params Tree<T>[] children)     //Erstellt den Baum mit seinen einzelnen Elementen
             : this(value)
             {
-                for (int i = 0; i <= children.Length; i++)
+                for (int i = 0; i < children.Length; i++)
                 {
-                    this.root.AddChild(children.root);
+                    root.AddChild(children[i].root);
                 }
             }
-            public Node<T> Root     //Gibt die Wurzel zurück
-            {
-                get
-                {
-                    return this.root;
 
-                }
+            public Node<T> Root()     //Gibt die Wurzel zurück
+            {
+                    return this.root;
             }
-            private void DepthFirstSearch(Node<T> root)
+            public void DepthFirstPrint(Node<T> root)
             {
                 if (this.root == null)
                 {
                     return;
                 }
-                Console.WriteLine(root.value);
+                Console.WriteLine(root.GetValue());
                 Node<T> child = null;
-                for (int i = 0; i < root.ChildrenCount; i++)
+                for (int i = 0; i < root.ChildrenCount(); i++)
                 {
                     child = root.GetChild(i);
-                    DepthFirstSearch(child);
+                    DepthFirstPrint(child);        
                 }
             }
 
+        public bool DepthFirstSearch(Node<T> root,T Search)
+        {
+            
+            if (this.root == null)
+            {
+                return false;
+            }
+            
+            if (root.GetValue().Equals(Search))
+            {
+                return true;
+            }
+            Node<T> child = null;
+            for (int i = 0; i < root.ChildrenCount(); i++)
+            {
+                
+                child = root.GetChild(i);
+                if (DepthFirstSearch(child, Search))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        class programm
+
+    }
+
+    class Programm
         {
-            static void Main()
+            static void Main(string[] args)
             {
                 Tree<int> tree =        //Erstellt einen Beispielbaum
 
@@ -121,6 +137,17 @@ namespace Bäume
 
                 new Tree<int>(6)));
 
+            tree.DepthFirstPrint(tree.Root());
+            Console.WriteLine("Nach welchem Wert suchen sie im Baum ?");
+            if (tree.DepthFirstSearch(tree.Root(), Convert.ToInt32(Console.ReadLine())))
+            {
+                Console.WriteLine("Der Wert ist im Baum vorhanden");
+            }
+            else
+            {
+                Console.WriteLine("Der Wert ist im Baum nicht vorhanden");
+            }
+            Console.ReadLine();
             }
         }
     }
